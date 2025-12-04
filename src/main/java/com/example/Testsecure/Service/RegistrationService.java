@@ -37,9 +37,12 @@ public class RegistrationService {
     public ResponseEntity<Map<String, String>> startRegistration(Map<String, String> req) {
 
         String email = req.get("email");
+
         String universityName = req.get("universityName");
         String password = req.get("password");
-
+        if (adminRepo.findByEmail(email).isPresent()) {
+            throw new RuntimeException("User already exists");
+        }
         String otp = String.format("%06d", new Random().nextInt(999999));
 
         TempRegistration temp = tempRepo.findByEmail(email)
