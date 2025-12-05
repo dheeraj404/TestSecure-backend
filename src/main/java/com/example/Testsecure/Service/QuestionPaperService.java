@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDate;
@@ -118,12 +119,14 @@ public class QuestionPaperService {
         }
 
         // Time rule: allow only within 30 minutes before exam time
+        LocalDateTime serverNow = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
         LocalDateTime examDateTime = LocalDateTime.of(paper.getExamDate(), paper.getExamTime());
         LocalDateTime allowedFrom = examDateTime.minusMinutes(30);
 
-        if (LocalDateTime.now().isBefore(allowedFrom)) {
+        if (serverNow.isBefore(allowedFrom)) {
             throw new RuntimeException("Download allowed only 30 minutes before exam time");
         }
+
 
         Path path = Paths.get(paper.getFilePath());
         if (!Files.exists(path)) {
